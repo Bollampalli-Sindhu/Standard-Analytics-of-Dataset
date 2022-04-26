@@ -1,14 +1,11 @@
-import Chart from "../../components/chart/Chart";
-import FeaturedInfo from "../../components/featuredInfo/FeaturedInfo";
 import "./home.css";
-
+import FeaturedInfo from "../../components/featuredInfo/FeaturedInfo";
+// import Chart from "../../components/chart/Chart";
 
 export default function Home() {
   return (
     <div className="home">
-      {/* Hello This is Homepage */}
       <FeaturedInfo />
-      
     </div>
   );
 }

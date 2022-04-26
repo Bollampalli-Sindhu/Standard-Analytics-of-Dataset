@@ -22,7 +22,7 @@ export default function FeaturedInfo() {
           >
             <Link
               to={{
-                pathname: "/analysis",
+                pathname: "/analysis/"+item,
                 state: { dataset:{item} },
               }}
             >
