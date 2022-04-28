@@ -1,0 +1,32 @@
+.horizontal_line_main{
+    width: 99.9%;
+    height: 0.5px;
+    background-color: black;
+}
+
+.horizontal_line{
+    height: 0.5px;
+    background-color: rgb(230, 230, 230);
+    margin-right: 30%; 
+}
+
+#p{
+    font-weight: bold;
+}
+
+.grid1{
+    padding: 10px;
+    margin: 10px;
+}
+
+.download{
+    align-content:right;
+}
+
+.button{
+    padding: 2%;
+    margin: 2%;
+    text-align: right;
+    background-color: black;
+    color: white;
+}
