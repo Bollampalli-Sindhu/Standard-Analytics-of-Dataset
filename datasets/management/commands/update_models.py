@@ -10,10 +10,11 @@ class Command(BaseCommand):
 
     def handle(self, *args , **options):
         pass
-        #df =  pd.read_excel('patient_data.xlsx')
+        # df =  pd.read_excel('patient_data.xlsx')
         
         # for t, s, c, si in zip(df.timestamp, df.sample_id, df.country, df.site_id):
         #     models = data_1( sample_id = s, timestamp=t, country=c, site_id=si)
+        #     # print(models)
         #     models.save()
 
         

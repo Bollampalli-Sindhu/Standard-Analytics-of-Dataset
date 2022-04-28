@@ -25,6 +25,7 @@ export default class AnalysisPage extends Component {
     };
     this.dataset_name = this.props.match.params.datasetName;
     this.get_metadata();
+    this.get_download_track();
     this.handleDownload = this.handleDownload.bind(this);
     this.state = {
       downloads: 0,
@@ -40,52 +41,22 @@ export default class AnalysisPage extends Component {
       },
       body: JSON.stringify({
         model_name: this.state.model_name,
-        downloads: this.state.downloads,
+        downloads: (this.state.downloads + 1),
         citations: this.state.citations,
       })
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         this.setState((prevState) => ({
           downloads: prevState.downloads + 1,
         }));
       });
   }
 
-  // handleDownload() {
-  //   this.setState((prevState) => ({
-  //     downloads: prevState.downloads + 1,
-  //   }));
-  //   const requestDownload = {
-  //     method: "POST",
-  //     headers: { 
-  //       "Content-Type": "application/json",
-  //       // "X-CSRFToken": '{{csrf_token}}',
-  //       'Accept': 'application/json',
-  //     },
-  //     body: JSON.stringify({
-  //       dataset_name: this.dataset_name,
-  //       downloads: this.state.downloads,
-  //       citations: this.state.citations,
-  //       model_name: this.state.model_name,
-  //       description: this.state.description,
-  //       dataset_size: this.state.dataset_size,
-  //     }),
-  //   };
-  //   console.log(requestDownload.body)
-  //   console.log(requestDownload.headers)
-  //   fetch("/dataset/analysis", requestDownload)
-  //     .then((response) => response.json())
-  //     .then((data) => console.log(data));
-  // }
-
   get_metadata() {
-    console.log("first")
     fetch("/dataset/get_metadata" + "?dataset=" + this.dataset_name)
       .then((response) => response.json())
       .then((data) => {
-        console.log("second")
         this.setState({
           model_name: data.model_name,
           dataset_size: data.dataset_size,
@@ -93,6 +64,19 @@ export default class AnalysisPage extends Component {
           downloads: data.downloads,
           description: data.description,
         });
+      })
+      .catch((err) => console.log("Error in fetching"));
+  }
+
+  get_download_track() {
+    fetch("/dataset/track_download" + "?dataset=" + this.dataset_name)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        const x = Object.keys(data)
+        const y = Object.values(data)
+        console.log(typeof(x))
+        
       })
       .catch((err) => console.log("Error in fetching"));
   }
