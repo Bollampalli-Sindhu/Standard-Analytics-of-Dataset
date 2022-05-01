@@ -12,6 +12,8 @@ yarn-error.log*
 
 frontend1/node_modules
 frontend1/build
+frontend1/package-lock.json
+frontend1/package.json
 frontend1/coverage
 frontend1/.pnp
 frontend1/.pnp.js
