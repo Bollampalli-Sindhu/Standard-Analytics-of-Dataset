@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import Data_1View, AnalyticsView, Data_2View,GetMetadataView,MetadataView, metadataApi,UpdateMetaDataView,DownloadTrackerView
+from .views import DatasetView, AnalyticsView, Data_2View,GetMetadataView,MetadataView, metadataApi,UpdateMetaDataView,DownloadTrackerView
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-    path('data',Data_1View.as_view()), #whatever url is recieved + '/home' will call main function
+    path('data',DatasetView.as_view()), #whatever url is recieved + '/home' will call main function
     path('metadata', MetadataView.as_view()),
     path('get_metadata',GetMetadataView.as_view()),
     path('get_data', AnalyticsView.as_view()),

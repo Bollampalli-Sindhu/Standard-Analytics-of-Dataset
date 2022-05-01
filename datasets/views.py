@@ -141,6 +141,20 @@ class AnalyticsView(APIView):
             return Response({'Dataset is not Found':"Dataset doesnot exits"}, status=status.HTTP_404_NOT_FOUND)
         return Response({'Bad Request':'model_name is not Found in request'}, status=status.HTTP_404_NOT_FOUND)
 
+class DatasetView(APIView):
+    lookup_url_kwarg = 'model'
+
+    def get(self, request, format=None):
+        model_name = request.GET.get(self.lookup_url_kwarg)
+        if model_name != None:
+            query_set = globals()[model_name].objects.all()
+            if len(query_set)>0:
+                df = pd.DataFrame(list(query_set.values()))
+                result = df.to_dict('list')
+
+                return Response(result, status=status.HTTP_200_OK)
+            return Response({'Dataset is empty':"No records"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'Bad Request':'model_name is not Found in request'}, status=status.HTTP_404_NOT_FOUND)
 
 class CSRFExemptMixin(object):
    @method_decorator(csrf_exempt)
