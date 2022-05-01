@@ -1,11 +1,11 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
+import { useParams } from "react-router-dom";
 
-// import Button from "@material-ui/core/Button";
-import styled from "styled-components";
 import Grid from "@material-ui/core/Grid";
+import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
 import "./analysis.css";
-import SelectInput from "@material-ui/core/Select/SelectInput";
+// import {Scrollbars} from "react-custom-scrollbars"
 
 const types = ["MetaData","Analysis"]
 
@@ -46,27 +46,6 @@ const Tab = styled.button`
   `}
 `;
 
-function TabGroup() {
-  const [active, setActive] = useState(types[0]);
-  return (
-    <>
-      <div>
-        {types.map((type) => (
-          <Tab
-            key={type}
-            active={active === type}
-            onClick={() => setActive(type)}
-          >
-            {type}
-          </Tab>
-        ))}
-      </div>
-      <p />
-      <p> Your payment selection: {active} </p>
-    </>
-  );
-}
-
 export default class AnalysisPage extends Component {
   constructor(props) {
     super(props);
@@ -78,15 +57,14 @@ export default class AnalysisPage extends Component {
       description: "None",
     };
     this.dataset_name = this.props.match.params.datasetName;
-    this.model_name = "none"
+    this.model_name = "None"
+    this.analytics_json="None"
     this.get_metadata();
-    this.get_download_track();
-    // this.get_analytics()
+    // this.get_download_track();
     this.handleDownload = this.handleDownload.bind(this);
     this.state = {
       downloads: 0,
     };
-    // this.get_analytics()
   }
 
   handleDownload(){
@@ -115,16 +93,16 @@ export default class AnalysisPage extends Component {
       .then((response) => response.json())
       .then((data) => {
         this.setState({
+          model_name: data.model_name,
           dataset_size: data.dataset_size,
           citations: data.citations,
           downloads: data.downloads,
           description: data.description,
         });
-        this.model_name = data.model_name;
+        this.model_name = data.model_name
         this.get_analytics()
       })
       .catch((err) => console.log("Error in fetching"));
-      
   }
 
   get_analytics() {
@@ -133,8 +111,9 @@ export default class AnalysisPage extends Component {
       .then((response) => response.json())
       .then((data) => {
         console.log(data)
+        this.analytics_json = JSON.parse(data)
         })
-      .catch((err) => console.log("Error in fetching"));
+      .catch((err) => console.log("Error in fetching analytics"));
    
     
   }
@@ -193,6 +172,8 @@ export default class AnalysisPage extends Component {
             <h2>Analytics of dataset</h2>
           </div>
           <hr className="horizontal_line"></hr>
+          <p>test</p>
+          <p>{this.analytics_json}</p>
         </div>
       </>
     );

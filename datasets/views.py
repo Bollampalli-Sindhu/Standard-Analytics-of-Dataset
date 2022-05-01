@@ -108,8 +108,11 @@ class UpdateMetaDataView(APIView):
 
     def post(self, request, format=None):
         serializer = self.serializer_class(data = request.data)
+        print("before checking serializer validity")
         if serializer.is_valid():
+            print("valid serializer")
             model_name = serializer.data.get('model_name')
+            print(model_name)
             downloads = serializer.data.get('downloads')
             citations = serializer.data.get('citations')
             queryset = Metadata.objects.filter(model_name = model_name)
