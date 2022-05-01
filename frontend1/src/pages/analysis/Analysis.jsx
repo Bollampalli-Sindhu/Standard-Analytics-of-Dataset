@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { useParams } from "react-router-dom";
-
+import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
@@ -46,6 +46,17 @@ const Tab = styled.button`
   `}
 `;
 
+export const Sample=(props)=>{
+  const data = props.data;
+  console.log("----Sample----");
+  console.log(props.data);
+  const k = Object.keys(props.data);
+  const col = k;
+  return(
+    <p>{col}</p>
+  );
+}
+
 export default class AnalysisPage extends Component {
   constructor(props) {
     super(props);
@@ -55,16 +66,19 @@ export default class AnalysisPage extends Component {
       citations: 0,
       downloads: 0,
       description: "None",
+      analytics_json:{},
+      dummy_obj:"None",
     };
     this.dataset_name = this.props.match.params.datasetName;
     this.model_name = "None"
-    this.analytics_json="None"
+    // this.get_metadata = this.get_metadata1.bind(this);
     this.get_metadata();
-    // this.get_download_track();
+    this.get_download_track();
     this.handleDownload = this.handleDownload.bind(this);
-    this.state = {
-      downloads: 0,
-    };
+    
+    // this.state = {
+    //   downloads: 0,
+    // };
   }
 
   handleDownload(){
@@ -87,36 +101,107 @@ export default class AnalysisPage extends Component {
         }));
       });
   }
-
-  get_metadata() {
-    fetch("/dataset/get_metadata" + "?dataset=" + this.dataset_name)
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({
-          model_name: data.model_name,
-          dataset_size: data.dataset_size,
-          citations: data.citations,
-          downloads: data.downloads,
-          description: data.description,
-        });
-        this.model_name = data.model_name
-        this.get_analytics()
-      })
-      .catch((err) => console.log("Error in fetching"));
+  
+  async get_metadata() {
+    const response = await fetch("/dataset/get_metadata" + "?dataset=" + this.dataset_name)
+    const data = await response.json();
+    this.model_name = data.model_name;
+    const response1 = await fetch("/dataset/get_data?model=" + this.model_name);
+    const data1 = await response1.json();
+    this.setState({
+      analytics_json: data1, 
+      model_name: data.model_name,
+      dataset_size: data.dataset_size,
+      citations: data.citations,
+      downloads: data.downloads,
+      description: data.description,
+      
+    });
+    console.log(data1)
+    console.log(this.state.analytics_json)
+    // fetch("/dataset/get_metadata" + "?dataset=" + this.dataset_name)
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     console.log(this)
+    //     console.log('Response body of outer "url":');
+    //     this.model_name = data.model_name;
+    //     const response1 = await fetch("/dataset/get_data?model=" + this.model_name);
+    //     const res_json = await response1.json();
+    //     console.log(res_json)
+    //     console.log(this)
+        // fetch("/dataset/get_data?model=" + this.model_name)
+        // .then(function (response1) {
+        //   response1.json().then(function (data2) {
+        //     console.log('Response body of inner "anotherUrl":');
+        //     console.log(JSON.stringify(data) + '\n\n');
+        //     console.log(JSON.stringify(data2) + '\n\n');
+        //     console.log(this)
+        //     // this.setState({
+        //     //   analytics_json: data2, 
+        //     //   model_name: data.model_name,
+        //     //   dataset_size: data.dataset_size,
+        //     //   citations: data.citations,
+        //     //   downloads: data.downloads,
+        //     //   description: data.description,
+              
+        //     // });
+        //   }.bind(this));
+        // }).catch(function () {
+        //   console.log('Booo');
+        // });
+    
+      // })
+      // .catch((err) => console.log("Error in fetching metadata"));
   }
 
-  get_analytics() {
+  // isEmpty(obj) {
+  //   return Object.keys(obj).length === 0;
+  // }
+
+  // get_analytics() {
+  //   if(this.isEmpty(this.state.analytics_json)){
+  //     fetch("/dataset/get_data?model=" + this.model_name)
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       console.log("first")
+  //       console.log(data)
+  //       console.log("below")
+  //       this.setState({
+  //         analytics_json: data.sample_id,
+  //       });
+  //       console.log("second")
+  //       console.log(this.state.analytics_json)
+  //       })
+  //     .catch((err) => console.log("Error in fetching analytics"));
+  //   }
     
-    fetch("/dataset/get_data?model=" + this.model_name)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        this.analytics_json = JSON.parse(data)
-        })
-      .catch((err) => console.log("Error in fetching analytics"));
-   
-    
-  }
+  // }
+
+  // async get_analytics1() {
+  //   try{
+  //     let response = await fetch("/dataset/get_data?model=" + this.model_name);
+  //     console.log("line 130")
+  //     console.log(response)
+  //     let data = response.json()
+      
+  //     console.log("line 132")
+  //   // console.log(data)
+  //     console.log("third_below")
+  //     // .then((response) => response.json())
+  //     // .then((data) => {
+  //     this.setState({
+  //       analytics_json : 20
+  //     });  
+  //     this.data = data  
+  //     console.log("second")
+  //       // console.log(this.state.analytics_json)
+  //       // })
+  //     // .catch((err) => console.log("Error in fetching analytics"));
+  //   }
+  //   catch(error){
+  //     console.log("error in fetching analytics")
+  //   }
+  // }
 
   get_download_track() {
     fetch("/dataset/track_download" + "?dataset=" + this.dataset_name)
@@ -126,7 +211,6 @@ export default class AnalysisPage extends Component {
         const x = Object.keys(data)
         const y = Object.values(data)
         console.log(typeof(x))
-        
       })
       .catch((err) => console.log("Error in fetching"));
   }
@@ -172,8 +256,8 @@ export default class AnalysisPage extends Component {
             <h2>Analytics of dataset</h2>
           </div>
           <hr className="horizontal_line"></hr>
-          <p>test</p>
-          <p>{this.analytics_json}</p>
+          {/* <p>test1</p> */}
+          <Sample data={this.state.analytics_json}/>
         </div>
       </>
     );
