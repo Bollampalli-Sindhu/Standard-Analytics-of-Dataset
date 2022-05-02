@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Chart from "../../components/chart/Chart";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 import Grid from "@material-ui/core/Grid";
 import styled from "styled-components";
 import Typography from "@material-ui/core/Typography";
@@ -98,14 +98,58 @@ const Tab = styled.button`
   `}
 `;
 
-export const Sample=(props)=>{
-  const data = props.data;
-  console.log("----Sample----");
-  console.log(props.data);
-  const k = Object.keys(props.data);
-  const col = k;
+export function Dummy(props){
+  const key = props.keys;
+  const value = props.value;
+  const items = [];
+  let index = 0;
+  for (let [key_, value] of Object.entries(value)){
+    items.push( <li key={index}>{key_}:{value}</li>)
+    index += 1
+  }
   return(
-    <p>{col}</p>
+    <>
+    <h3>{key}</h3>
+    {items}
+    </>
+  )
+}
+
+export function Sample(props){
+  const data = (props.data);
+  const items = [];
+  // console.log("----Sample----");
+  // console.log(props.data);
+  // const k = Object.keys(props.data);
+  // const val = Object.values(props.data);
+  let index = 0
+  for (let [key_, value] of Object.entries(data)){
+    items.push( <Dummy key={index} keys={key_} value={value}/>)
+    index += 1
+  }
+  console.log("items")
+  console.log(items)
+  // console.log("---Columns---");
+  // console.log(val);
+  // console.log("---Values---");
+  // console.log(val);
+  // const col = k;
+
+  // let itemList = data.map((item, index) => {
+  //   return (
+  //     <div key={item}>
+  //       {index}
+  //     </div>
+  //   );
+  // });
+
+
+
+  return (
+    <>
+      <ul>{items}</ul>
+      {/* {itemList} */}
+    </>
   );
 }
 
