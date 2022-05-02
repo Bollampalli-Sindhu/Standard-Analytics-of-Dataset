@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Chart from "../../components/chart/Chart";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Grid from "@material-ui/core/Grid";
@@ -8,6 +9,57 @@ import "./analysis.css";
 // import {Scrollbars} from "react-custom-scrollbars"
 
 const types = ["MetaData","Analysis"]
+
+const userData = [
+  {
+    name: "Jan",
+    "Active User": 4000,
+  },
+  {
+    name: "Feb",
+    "Active User": 3000,
+  },
+  {
+    name: "Mar",
+    "Active User": 5000,
+  },
+  {
+    name: "Apr",
+    "Active User": 4000,
+  },
+  {
+    name: "May",
+    "Active User": 3000,
+  },
+  {
+    name: "Jun",
+    "Active User": 2000,
+  },
+  {
+    name: "Jul",
+    "Active User": 4000,
+  },
+  {
+    name: "Agu",
+    "Active User": 3000,
+  },
+  {
+    name: "Sep",
+    "Active User": 4000,
+  },
+  {
+    name: "Oct",
+    "Active User": 1000,
+  },
+  {
+    name: "Nov",
+    "Active User": 4000,
+  },
+  {
+    name: "Dec",
+    "Active User": 3000,
+  },
+];
 
 const Button = styled.button`
   background-color: "#333333";
@@ -67,14 +119,15 @@ export default class AnalysisPage extends Component {
       downloads: 0,
       description: "None",
       analytics_json:{},
-      dummy_obj:"None",
+      chart_data : []
     };
     this.dataset_name = this.props.match.params.datasetName;
     this.model_name = "None"
     // this.get_metadata = this.get_metadata1.bind(this);
     this.get_metadata();
-    this.get_download_track();
+    // this.get_download_track();
     this.handleDownload = this.handleDownload.bind(this);
+    this.handleCitation = this.handleCitation.bind(this);
     
     // this.state = {
     //   downloads: 0,
@@ -96,9 +149,41 @@ export default class AnalysisPage extends Component {
     })
       .then((response) => response.json())
       .then((data) => {
+        var today = new Date();
+        var month = today.getMonth() 
+        console.log(typeof(month))
+        let val = this.state.chart_data[month].count 
+        console.log("month increment: ", val)
         this.setState((prevState) => ({
           downloads: prevState.downloads + 1,
+        //   chart_data: {
+        //     ...prevState.chart_data,
+        //     [prevState.chart_data[month].count]: val+1,
+        // },
         }));
+        this.get_download_track()
+      });
+  }
+
+  handleCitation(){
+    fetch("/dataset/analysis", {
+      method: 'post',
+      headers:{ 
+        "Content-Type": "application/json",
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        model_name: this.state.model_name,
+        downloads: this.state.downloads ,
+        citations: (this.state.citations+1),
+      })
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState((prevState) => ({
+          citations: prevState.citations + 1,
+        }));
+        // this.get_download_track()
       });
   }
   
@@ -106,8 +191,20 @@ export default class AnalysisPage extends Component {
     const response = await fetch("/dataset/get_metadata" + "?dataset=" + this.dataset_name)
     const data = await response.json();
     this.model_name = data.model_name;
+    
     const response1 = await fetch("/dataset/get_data?model=" + this.model_name);
     const data1 = await response1.json();
+
+    const response2 = await fetch("/dataset/track_download" + "?dataset=" + this.dataset_name);
+    const data2 = await response2.json();
+    let chart_ = []
+    for(let [key, val] of Object.entries(data2)) {
+      let temp = {}
+      temp['month'] = key
+      temp['count'] = val
+      chart_.push(temp)
+    }
+    console.log(chart_)
     this.setState({
       analytics_json: data1, 
       model_name: data.model_name,
@@ -115,10 +212,13 @@ export default class AnalysisPage extends Component {
       citations: data.citations,
       downloads: data.downloads,
       description: data.description,
-      
+      chart_data: chart_
     });
     console.log(data1)
     console.log(this.state.analytics_json)
+    
+
+    
     // fetch("/dataset/get_metadata" + "?dataset=" + this.dataset_name)
     //   .then((response) => response.json())
     //   .then((data) => {
@@ -207,10 +307,16 @@ export default class AnalysisPage extends Component {
     fetch("/dataset/track_download" + "?dataset=" + this.dataset_name)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
-        const x = Object.keys(data)
-        const y = Object.values(data)
-        console.log(typeof(x))
+        let chart_ = []
+        for(let [key, val] of Object.entries(data)) {
+          let temp = {}
+          temp['month'] = key
+          temp['count'] = val
+          chart_.push(temp)
+        }
+        this.setState({
+          chart_data: chart_
+        });
       })
       .catch((err) => console.log("Error in fetching"));
   }
@@ -256,8 +362,20 @@ export default class AnalysisPage extends Component {
             <h2>Analytics of dataset</h2>
           </div>
           <hr className="horizontal_line"></hr>
-          {/* <p>test1</p> */}
           <Sample data={this.state.analytics_json}/>
+          {/* <p>{this.state.chart_data[4].count}</p> */}
+          <div>
+            <Chart data={this.state.chart_data} title="User Analytics" grid dataKey="count"/>
+          </div>
+          <Grid item lg={6} sm={12} xs={12} container spacing={0} className="download">
+              <Button
+                className="button"
+                variant="contained"
+                onClick={this.handleCitation}
+              >
+              <h3>Did you Cite this? (click if yes) </h3>
+              </Button>
+            </Grid> 
         </div>
       </>
     );
